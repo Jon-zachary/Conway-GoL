@@ -1,4 +1,9 @@
-const { makeGrid, setGridValue, getGridValue } = require("../src/index.js");
+const {
+  makeGrid,
+  setGridValue,
+  getGridValue,
+  checkNeighbors
+} = require("../src/index.js");
 
 describe("makeGrid", () => {
   test("makeGrid returns an array", () => {
@@ -25,8 +30,8 @@ describe("setGridValue", () => {
     const grid = makeGrid(2);
     setGridValue(0, 0, false, grid);
     expect(grid[0][0]).toBe(false);
-  })
-})
+  });
+});
 
 describe("getGridValue", () => {
   test("returns grid val at coords", () => {
@@ -41,5 +46,17 @@ describe("getGridValue", () => {
     const grid = makeGrid(2);
     expect(getGridValue(2, 0, grid)).toBe(undefined);
     expect(getGridValue(0, 2, grid)).toBe(undefined);
+  });
+});
+
+describe("checkNeighbors", () => {
+  test("returns number of live neighbors", () => {
+    let grid = makeGrid(3).map(el => el.map(el => false));
+    expect(checkNeighbors(1, 1, grid)).toBe(0);
+    expect(checkNeighbors(2, 1, grid)).toBe(0);
+    grid = makeGrid(3).map(el => el.map(el => true));
+    expect(checkNeighbors(1, 1, grid)).toBe(8);
+    expect(checkNeighbors(0, 0, grid)).toBe(3);
+    expect(checkNeighbors(2, 1, grid)).toBe(5);
   });
 });
