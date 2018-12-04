@@ -2,7 +2,8 @@ const {
   makeGrid,
   setGridValue,
   getGridValue,
-  checkNeighbors
+  checkNeighbors,
+  isLive
 } = require("../src/index.js");
 
 describe("makeGrid", () => {
@@ -59,4 +60,42 @@ describe("checkNeighbors", () => {
     expect(checkNeighbors(0, 0, grid)).toBe(3);
     expect(checkNeighbors(2, 1, grid)).toBe(5);
   });
+});
+
+describe("isLive", () => {
+  test("if cell is live and has less that 2 live neighbors returns false", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    setGridValue(2, 1, true, grid);
+    setGridValue(2, 2, true, grid);
+    setGridValue(2, 3, true, grid);
+    expect(isLive(2, 0, grid)).toBe(false);
+    expect(isLive(2, 1, grid)).toBe(false);
+    expect(isLive(2, 4, grid)).toBe(false);
+    expect(isLive(0, 0, grid)).toBe(false);
+  });
+  test("if cell is live and has two or three neighbors it lives on", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    setGridValue(2, 1, true, grid);
+    setGridValue(2, 2, true, grid);
+    setGridValue(2, 3, true, grid);
+    expect(isLive(2, 2, grid)).toBe(true);
+    setGridValue(1, 2, true, grid);
+    expect(isLive(1, 2, grid)).toBe(true);
+  });
+  test("if cell is live and has more than three neighbors it dies", () => {
+    const grid = makeGrid(5).map(el => el.map(el => true));
+    expect(isLive(0, 0, grid)).toBe(true);
+    expect(isLive(0, 1, grid)).toBe(false);
+    expect(isLive(2, 2, grid)).toBe(false);
+  });
+  test("if cell is dead and has exactly three live neighbors it becomes live", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    setGridValue(2, 1, true, grid);
+    setGridValue(2, 2, true, grid);
+    setGridValue(2, 3, true, grid);
+    expect(isLive(1, 2, grid)).toBe(true);
+    expect(isLive(3, 2, grid)).toBe(true);
+    setGridValue(0, 2, true, grid);
+    expect(isLive(1, 2, grid)).toBe(false);
+  })
 });

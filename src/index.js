@@ -61,7 +61,29 @@ const checkNeighbors = (row, col, grid) => {
   return neighbors;
 };
 
+/**
+Takes a cell and returnd true if it's next state is alive and false otherwise.
+@function isLive
+@param row {Integer} - row of element.
+@param col {Integer} - col of element.
+@param grid {Array} - grid containing element.
+@return val {Boolean} - the value of the cell in the next state.
+*/
+const isLive = (row, col, grid) => {
+  const currentVal = getGridValue(row, col, grid);
+  const neighborVal = checkNeighbors(row, col, grid);
+  if (currentVal) {
+    if (neighborVal < 2) return false;
+    if (neighborVal === 2 || neighborVal === 3) return true;
+    if (neighborVal > 3) return false;
+  } else {
+    if (neighborVal === 3) return true;
+    else return false;
+  }
+}
+
 module.exports = {
+  isLive,
   makeGrid,
   setGridValue,
   getGridValue,
