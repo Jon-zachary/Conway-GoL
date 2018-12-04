@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.js",
+  entry: "./src/domFunctions.js",
   devtool: "inline-source-map",
   devServer: {
     contentBase: "./dist",

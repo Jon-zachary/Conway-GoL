@@ -1,11 +1,11 @@
-const {
+import  {
   makeGrid,
   setGridValue,
   getGridValue,
   checkNeighbors,
   isLive,
   nextGrid,
-} = require("../src/index.js");
+} from "../src/index.js";
 
 describe("makeGrid", () => {
   test("makeGrid returns an array", () => {

@@ -6,8 +6,24 @@ Create an array of arrays each of equal length that mirrors a matrix.
 @param {Integer} size - Size of the grid.
 @returns {Array} - Each element of the array will be an array of size size.
 */
+
 const makeGrid = n => {
   const arr = Array.from({ length: n }, () => Array.from({ length: n }));
+  return arr;
+};
+
+/**
+Create a grid of all false values for the initial setup
+@function initGrid
+@param {Integer} size - Size of the grid.
+@returns {Array} - Each element of the array will be an array of size size. Each
+element of that array will be false.
+*/
+
+const initGrid = n => {
+  const arr = Array.from({ length: n }, () =>
+    Array.from({ length: n }, () => false)
+  );
   return arr;
 };
 
@@ -19,6 +35,7 @@ Set the value of an element in a grid.
 @param {Boolean} val - The value of the element.
 @param {Array} grid - The grid to alter.
 */
+
 const setGridValue = (row, col, val, grid) => {
   grid[row][col] = val;
 };
@@ -31,6 +48,7 @@ Read the value of an element in a grid. If the value is out of bounds returns un
 @param {Array} grid - the grid containing the element to be read.
 @returns {Boolean|undefined} - Each element of a gid will be true or false or undefined.
 */
+
 const getGridValue = (row, col, grid) => {
   const val = grid[row] ? grid[row][col] : undefined;
   return val;
@@ -44,6 +62,7 @@ Check the eight immediate neighbors of a cell and return the number of true cell
 @param {Array} grid - The grid containing the cell.
 @returns {Integer} - The number of true neighbors.
 */
+
 const checkNeighbors = (row, col, grid) => {
   const neighbors = [
     getGridValue(row - 1, col - 1, grid),
@@ -69,6 +88,7 @@ Takes a cell and returnd true if it's next state is alive and false otherwise.
 @param grid {Array} - grid containing element.
 @return val {Boolean} - the value of the cell in the next state.
 */
+
 const isLive = (row, col, grid) => {
   const currentVal = getGridValue(row, col, grid);
   const neighborVal = checkNeighbors(row, col, grid);
@@ -80,7 +100,7 @@ const isLive = (row, col, grid) => {
     if (neighborVal === 3) return true;
     else return false;
   }
-}
+};
 
 /**
 map through the current grid applying isLive and return the new grid.
@@ -88,16 +108,18 @@ map through the current grid applying isLive and return the new grid.
 @param {Array} - the current grid
 @return {Array} - the new grid
 */
-const nextGrid = (grid) => {
+
+const nextGrid = grid => {
   const newGrid = grid.map((row, i) => {
     return row.map((col, j) => {
       return isLive(i, j, grid);
     });
   });
   return newGrid;
-}
+};
 
-module.exports = {
+export {
+  initGrid,
   nextGrid,
   isLive,
   makeGrid,
