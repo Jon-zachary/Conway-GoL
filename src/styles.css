@@ -8,19 +8,17 @@
 
 .grid-wrapper {
   display: grid;
-  grid-template-rows: repeat(10, 1fr);
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(var(--size), 1fr);
+  grid-template-columns: repeat(var(--size), 1fr);
   border: solid black 1px;
   width: 300px;
   height: 300px
 }
-.grid-cell:nth-child(odd){
-  background-color: black;
-}
-.grid-cell:nth-child(2n + 11){
-  background-color: blue;
-}
 
 .grid-cell {
+  border: solid black 1px;
+}
 
+.live {
+  background-color: black;
 }
