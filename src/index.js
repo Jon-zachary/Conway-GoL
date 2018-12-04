@@ -1,4 +1,4 @@
-// import "./styles.css";
+import "./styles.css";
 
 /**
 Create an array of arrays each of equal length that mirrors a matrix.
