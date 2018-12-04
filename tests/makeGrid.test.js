@@ -3,7 +3,8 @@ const {
   setGridValue,
   getGridValue,
   checkNeighbors,
-  isLive
+  isLive,
+  nextGrid,
 } = require("../src/index.js");
 
 describe("makeGrid", () => {
@@ -99,3 +100,23 @@ describe("isLive", () => {
     expect(isLive(1, 2, grid)).toBe(false);
   })
 });
+
+describe("nextGrid", () => {
+  test("should return an array", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    const newGrid = nextGrid(grid);
+    expect(newGrid).toBeInstanceOf(Array);
+  });
+  test("three cell row should become three cel column", ()=> {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    setGridValue(2, 1, true, grid);
+    setGridValue(2, 2, true, grid);
+    setGridValue(2, 3, true, grid);
+    const newGrid = nextGrid(grid);
+    expect(getGridValue(1, 2, newGrid)).toBe(true);
+    expect(getGridValue(2, 2, newGrid)).toBe(true);
+    expect(getGridValue(3, 2, newGrid)).toBe(true);
+    expect(getGridValue(2, 1, newGrid)).toBe(false);
+    expect(getGridValue(2, 3, newGrid)).toBe(false);
+  });
+})

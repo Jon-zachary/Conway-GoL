@@ -82,7 +82,23 @@ const isLive = (row, col, grid) => {
   }
 }
 
+/**
+map through the current grid applying isLive and return the new grid.
+@function nextGrid
+@param {Array} - the current grid
+@return {Array} - the new grid
+*/
+const nextGrid = (grid) => {
+  const newGrid = grid.map((row, i) => {
+    return row.map((col, j) => {
+      return isLive(i, j, grid);
+    });
+  });
+  return newGrid;
+}
+
 module.exports = {
+  nextGrid,
   isLive,
   makeGrid,
   setGridValue,
