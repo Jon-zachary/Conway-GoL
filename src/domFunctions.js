@@ -5,15 +5,26 @@ import {
   makeGrid,
   setGridValue,
   getGridValue,
-  checkNeighbors
+  checkNeighbors,
+  flatten,
+  isEqual,
 } from "./index.js";
+import "./styles.css";
+
 
 // Global objects to be refrenced throughout script.
 const globals = {
   size: 10,
   grid: initGrid(10),
   intId: null,
-  speed: 500,
+  speed: 200,
+  iterations: 0,
+}
+
+const isFinished = (grid) => {
+  if (isEqual(grid, nextGrid(grid))) {
+    window.clearInterval(globals.intId);
+  }
 }
 
 /**
@@ -23,11 +34,14 @@ and replaces it with rendred new grid.
 */
 
 const updateDom = () => {
+  isFinished(globals.grid);
   const newGrid = nextGrid(globals.grid);
   globals.grid = newGrid;
   document.querySelector('.grid-wrapper').remove();
+  document.querySelector('.iter-counter').textContent = globals.iterations;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
+  globals.iterations += 1;
 }
 
 /**
@@ -38,9 +52,12 @@ Click handler that clears both the global grid array and it's dom representation
 
 const handleClearClick = (e) => {
   e.preventDefault();
+  window.clearInterval(globals.intId);
   const newGrid = initGrid(globals.size);
   globals.grid = newGrid;
   document.querySelector('.grid-wrapper').remove();
+  globals.iterations = 0;
+  document.querySelector('.iter-counter').textContent = globals.iterations;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
 }
@@ -78,7 +95,8 @@ and in the dom by toggling a live class.
 const handleCellClick = (e) => {
   e.preventDefault();
   const {row, col} = e.target.dataset;
-  setGridValue(row, col, true, globals.grid);
+  const val = getGridValue(row, col, globals.grid);
+  setGridValue(row, col, !val, globals.grid);
   e.target.classList.toggle('live')
 }
 
@@ -96,11 +114,11 @@ const handleNextClick = (e) => {
 /**
 Event handler that gets the value of the range slider and sets the resolution of
 the grid accordingly. It also set's the size to global so it can be used by CSS
-@function handleRange
+@function handleResRange
 @param e {Event}
 */
 
-const handleRange = (e) => {
+const handleResRange = (e) => {
   e.preventDefault();
   globals.size = e.target.value;
   document.querySelector('.grid-wrapper').remove();
@@ -108,6 +126,19 @@ const handleRange = (e) => {
   globals.grid = grid;
   const domGrid = renderGrid(grid);
   document.body.appendChild(domGrid);
+}
+
+/**
+Event handler that handles the speed slider. Sets the global speed which is used
+in the set interval.
+@function handleSpeedRange
+@param e {Event}
+*/
+
+const handleSpeedRange = (e) => {
+  e.preventDefault();
+  window.clearInterval(globals.intId);
+  globals.speed = e.target.value;
 }
 
 /**
@@ -145,8 +176,9 @@ const renderGrid = grid => {
 Creates a range slider for the Resolution
 @function renderSizeSlider
 @param max {Integer} - maximum value the slider can take.
-@returns {Dom element}
+@returns {HTMLElement}
 */
+
 const renderSizeSlider = (max) => {
   const sliderWrapper = document.createElement("div");
   const slider = document.createElement("input");
@@ -158,16 +190,39 @@ const renderSizeSlider = (max) => {
   slider.setAttribute("min", "5");
   slider.setAttribute("max", `${max}`);
   slider.setAttribute("value", "5");
-  slider.onchange = handleRange;
+  slider.onchange = handleResRange;
   sliderWrapper.appendChild(slider);
   sliderWrapper.appendChild(label);
   return sliderWrapper;
+};
+/**
+Creates a speed slider that controls the delay in the set interval
+@function renderSpeedSlider
+@param max {Integer} - maximum value the slider can take.
+@returns {HTMLElement}
+*/
+const renderSpeedSlider = (max) => {
+  const speedSliderWrapper = document.createElement("div");
+  const slider = document.createElement("input");
+  const label = document.createElement("label");
+  label.setAttribute("for", "speed");
+  label.textContent = "Speed";
+  slider.setAttribute("type", "range");
+  slider.setAttribute("name", "speed");
+  slider.setAttribute("min", `${max}`);
+  slider.setAttribute("max", "1000");
+  slider.setAttribute("value", "500");
+  slider.style.direction = "rtl";
+  slider.onchange = handleSpeedRange;
+  speedSliderWrapper.appendChild(slider);
+  speedSliderWrapper.appendChild(label);
+  return speedSliderWrapper;
 };
 
 /**
 Creates next button
 @function renderNextButton
-@return {Dom element}
+@return {HTMLElement}
 */
 
 const renderNextButton = () => {
@@ -180,7 +235,7 @@ const renderNextButton = () => {
 /**
 Creates start button
 @function renderStartButton
-@return {Dom element}
+@return {HTMLElement}
 */
 
 const renderStartButton = () => {
@@ -193,7 +248,7 @@ const renderStartButton = () => {
 /**
 Creates stop button
 @function renderStopButton
-@return {Dom element}
+@return {HTMLElement}
 */
 
 const renderStopButton = () => {
@@ -206,7 +261,7 @@ const renderStopButton = () => {
 /**
 Creates clear button
 @function renderClearButton
-@return {Dom element}
+@return {HTMLElement}
 */
 
 const renderClearButton = () => {
@@ -216,11 +271,20 @@ const renderClearButton = () => {
   return clearButton;
 }
 
+const renderIterCounter = () => {
+  const iterCounter = document.createElement("div");
+  iterCounter.className = "iter-counter";
+  iterCounter.textContent = globals.iterations;
+  return iterCounter;
+}
+
 
 // appends Dom nodes to body.
+document.body.appendChild(renderSpeedSlider(50));
 document.body.appendChild(renderSizeSlider(30));
 document.body.appendChild(renderStartButton());
 document.body.appendChild(renderClearButton());
 document.body.appendChild(renderStopButton());
 document.body.appendChild(renderNextButton());
 document.body.appendChild(renderGrid(initGrid(globals.size)));
+document.body.appendChild(renderIterCounter());

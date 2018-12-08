@@ -1,10 +1,12 @@
-import  {
+import {
   makeGrid,
   setGridValue,
   getGridValue,
   checkNeighbors,
   isLive,
   nextGrid,
+  flatten,
+  isEqual
 } from "../src/index.js";
 
 describe("makeGrid", () => {
@@ -98,7 +100,7 @@ describe("isLive", () => {
     expect(isLive(3, 2, grid)).toBe(true);
     setGridValue(0, 2, true, grid);
     expect(isLive(1, 2, grid)).toBe(false);
-  })
+  });
 });
 
 describe("nextGrid", () => {
@@ -107,7 +109,7 @@ describe("nextGrid", () => {
     const newGrid = nextGrid(grid);
     expect(newGrid).toBeInstanceOf(Array);
   });
-  test("three cell row should become three cel column", ()=> {
+  test("three cell row should become three cel column", () => {
     const grid = makeGrid(5).map(el => el.map(el => false));
     setGridValue(2, 1, true, grid);
     setGridValue(2, 2, true, grid);
@@ -119,4 +121,28 @@ describe("nextGrid", () => {
     expect(getGridValue(2, 1, newGrid)).toBe(false);
     expect(getGridValue(2, 3, newGrid)).toBe(false);
   });
-})
+});
+
+describe("flatten", () => {
+  test("should return flat array", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    const flat = flatten(grid);
+    expect(flat).toHaveLength(25);
+    flat.forEach(el => {
+      expect(el).toBe(false);
+    });
+  });
+});
+
+describe("isEqual", () => {
+  test("should return true if elements of grid are same", () => {
+    const grid1 = makeGrid(5).map(el => el.map(el => false));
+    const grid2 = makeGrid(5).map(el => el.map(el => false));
+    expect(isEqual(grid1, grid2)).toBe(true);
+  });
+  test("should return false if elements of grid are not the same", () => {
+    const grid1 = makeGrid(5).map(el => el.map(el => false));
+    const grid2 = makeGrid(5).map(el => el.map(el => true));
+    expect(isEqual(grid1, grid2)).toBe(false);
+  });
+});

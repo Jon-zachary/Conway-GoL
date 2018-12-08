@@ -105,7 +105,7 @@ const isLive = (row, col, grid) => {
 /**
 map through the current grid applying isLive and return the new grid.
 @function nextGrid
-@param {Array} - the current grid
+@param grid {Array} - the current grid
 @return {Array} - the new grid
 */
 
@@ -118,7 +118,42 @@ const nextGrid = grid => {
   return newGrid;
 };
 
+/**
+Flatten grid. Non-recursively flatten 2D array. Assumes all els are arrays and
+no nested arrays inside.
+@function flattenGrid
+@param grid {Array} - the grid to be flattend.
+@return {Array} - Array of non-array values.
+*/
+
+const flatten = arr => {
+  const res = arr.reduce((a, b) => {
+    return [...a, ...b];
+  }, []);
+  return res;
+};
+
+/**
+Check to see if two grids are equal
+@function isEqual
+@param grid1 {Array} - first grid to compare.
+@param grid2 {Array} - other grid to compare.
+@return {Boolean} - true iff all elements of grid 1 equal all elements of grid 2
+*/
+
+const isEqual = (grid1, grid2) => {
+  const flatGrid1 = flatten(grid1);
+  const flatGrid2 = flatten(grid2);
+  let res = true;
+  flatGrid1.forEach((el, i) => {
+    if (el !== flatGrid2[i]) res = false;
+  });
+  return res;
+}
+
 export {
+  isEqual,
+  flatten,
   initGrid,
   nextGrid,
   isLive,

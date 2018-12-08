@@ -7,7 +7,7 @@
     "build": "webpack",
     "start": "webpack-dev-server --open --hot",
     "test": "jest",
-    "doc": "jsdoc ./src/index.js"
+    "doc": "jsdoc ./src/"
   },
   "jest": {
     "transform": {
