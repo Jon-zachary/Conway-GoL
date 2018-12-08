@@ -7,10 +7,9 @@ import {
   getGridValue,
   checkNeighbors,
   flatten,
-  isEqual,
+  isEqual
 } from "./index.js";
 import "./styles.css";
-
 
 // Global objects to be refrenced throughout script.
 const globals = {
@@ -18,14 +17,14 @@ const globals = {
   grid: initGrid(10),
   intId: null,
   speed: 200,
-  iterations: 0,
-}
+  iterations: 0
+};
 
-const isFinished = (grid) => {
+const isFinished = grid => {
   if (isEqual(grid, nextGrid(grid))) {
     window.clearInterval(globals.intId);
   }
-}
+};
 
 /**
 Applies next grid function to current grid in global, removes current dom grid
@@ -37,12 +36,12 @@ const updateDom = () => {
   isFinished(globals.grid);
   const newGrid = nextGrid(globals.grid);
   globals.grid = newGrid;
-  document.querySelector('.grid-wrapper').remove();
-  document.querySelector('.iter-counter').textContent = globals.iterations;
+  document.querySelector(".grid-wrapper").remove();
+  document.querySelector(".iter-counter").textContent = globals.iterations;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
   globals.iterations += 1;
-}
+};
 
 /**
 Click handler that clears both the global grid array and it's dom representation
@@ -50,17 +49,17 @@ Click handler that clears both the global grid array and it's dom representation
 @param e {Event}
 */
 
-const handleClearClick = (e) => {
+const handleClearClick = e => {
   e.preventDefault();
   window.clearInterval(globals.intId);
   const newGrid = initGrid(globals.size);
   globals.grid = newGrid;
-  document.querySelector('.grid-wrapper').remove();
+  document.querySelector(".grid-wrapper").remove();
   globals.iterations = 0;
-  document.querySelector('.iter-counter').textContent = globals.iterations;
+  document.querySelector(".iter-counter").textContent = globals.iterations;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
-}
+};
 
 /**
 Click handler that calls updateDom in a setInterval and sets the intervalId to
@@ -69,11 +68,10 @@ a global so that it can be stopped later. The interval timeout is set to a globa
 @param e {Event}
 */
 
-const handleStartClick = (e) => {
+const handleStartClick = e => {
   e.preventDefault();
-  let loop = globals.loop
   globals.intId = window.setInterval(updateDom, globals.speed);
-}
+};
 
 /**
 Click handler that clears the interval from the handleStartClick
@@ -81,9 +79,9 @@ Click handler that clears the interval from the handleStartClick
 @param e {Event}
 */
 
-const handleStopClick = (e) => {
+const handleStopClick = e => {
   window.clearInterval(globals.intId);
-}
+};
 
 /**
 Click handler that changes the state of a cell both in the grid object in globals
@@ -92,13 +90,13 @@ and in the dom by toggling a live class.
 @param e {Event}
 */
 
-const handleCellClick = (e) => {
+const handleCellClick = e => {
   e.preventDefault();
-  const {row, col} = e.target.dataset;
+  const { row, col } = e.target.dataset;
   const val = getGridValue(row, col, globals.grid);
   setGridValue(row, col, !val, globals.grid);
-  e.target.classList.toggle('live')
-}
+  e.target.classList.toggle("live");
+};
 
 /**
 Click handler that applies a single update to the grid.
@@ -106,10 +104,10 @@ Click handler that applies a single update to the grid.
 @param e {Event}
 */
 
-const handleNextClick = (e) => {
+const handleNextClick = e => {
   e.preventDefault();
   updateDom();
-}
+};
 
 /**
 Event handler that gets the value of the range slider and sets the resolution of
@@ -118,15 +116,15 @@ the grid accordingly. It also set's the size to global so it can be used by CSS
 @param e {Event}
 */
 
-const handleResRange = (e) => {
+const handleResRange = e => {
   e.preventDefault();
   globals.size = e.target.value;
-  document.querySelector('.grid-wrapper').remove();
+  document.querySelector(".grid-wrapper").remove();
   const grid = initGrid(e.target.value);
   globals.grid = grid;
   const domGrid = renderGrid(grid);
   document.body.appendChild(domGrid);
-}
+};
 
 /**
 Event handler that handles the speed slider. Sets the global speed which is used
@@ -135,11 +133,14 @@ in the set interval.
 @param e {Event}
 */
 
-const handleSpeedRange = (e) => {
+const handleSpeedRange = e => {
   e.preventDefault();
   window.clearInterval(globals.intId);
   globals.speed = e.target.value;
-}
+  if (globals.iterations > 0) {
+    globals.intId = window.setInterval(updateDom, globals.speed);
+  }
+};
 
 /**
 Renders a grid from the make makeGrid function with cells given class live or dead
@@ -163,7 +164,7 @@ const renderGrid = grid => {
       cell.dataset.row = i;
       cell.dataset.col = j;
       if (getGridValue(cell.dataset.row, cell.dataset.col, grid)) {
-        cell.classList.add('live');
+        cell.classList.add("live");
       }
       parent.appendChild(cell);
     });
@@ -179,7 +180,7 @@ Creates a range slider for the Resolution
 @returns {HTMLElement}
 */
 
-const renderSizeSlider = (max) => {
+const renderSizeSlider = max => {
   const sliderWrapper = document.createElement("div");
   const slider = document.createElement("input");
   const label = document.createElement("label");
@@ -201,7 +202,7 @@ Creates a speed slider that controls the delay in the set interval
 @param max {Integer} - maximum value the slider can take.
 @returns {HTMLElement}
 */
-const renderSpeedSlider = (max) => {
+const renderSpeedSlider = max => {
   const speedSliderWrapper = document.createElement("div");
   const slider = document.createElement("input");
   const label = document.createElement("label");
@@ -230,7 +231,7 @@ const renderNextButton = () => {
   nextButton.textContent = "Next";
   nextButton.onclick = handleNextClick;
   return nextButton;
-}
+};
 
 /**
 Creates start button
@@ -243,7 +244,7 @@ const renderStartButton = () => {
   startButton.textContent = "Start";
   startButton.onclick = handleStartClick;
   return startButton;
-}
+};
 
 /**
 Creates stop button
@@ -256,7 +257,7 @@ const renderStopButton = () => {
   stopButton.textContent = "Stop";
   stopButton.onclick = handleStopClick;
   return stopButton;
-}
+};
 
 /**
 Creates clear button
@@ -269,15 +270,14 @@ const renderClearButton = () => {
   clearButton.textContent = "Clear";
   clearButton.onclick = handleClearClick;
   return clearButton;
-}
+};
 
 const renderIterCounter = () => {
   const iterCounter = document.createElement("div");
   iterCounter.className = "iter-counter";
   iterCounter.textContent = globals.iterations;
   return iterCounter;
-}
-
+};
 
 // appends Dom nodes to body.
 document.body.appendChild(renderSpeedSlider(50));
