@@ -7,7 +7,7 @@ import {
   getGridValue,
   checkNeighbors,
   flatten,
-  isEqual
+  isEqual,
 } from "./index.js";
 import "./styles.css";
 

@@ -149,7 +149,7 @@ const isEqual = (grid1, grid2) => {
     if (el !== flatGrid2[i]) res = false;
   });
   return res;
-}
+};
 
 export {
   isEqual,
@@ -160,5 +160,5 @@ export {
   makeGrid,
   setGridValue,
   getGridValue,
-  checkNeighbors
+  checkNeighbors,
 };
