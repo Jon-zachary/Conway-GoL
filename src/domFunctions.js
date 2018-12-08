@@ -20,6 +20,13 @@ const globals = {
   iterations: 0
 };
 
+/**
+Checks to see if the current grid is the same as the previous grid if so, stops
+@function isFinished
+@param grid {Array}
+@return {Boolean} - true if the grid is unchanged under transformation.
+*/
+
 const isFinished = grid => {
   if (isEqual(grid, nextGrid(grid))) {
     window.clearInterval(globals.intId);
@@ -37,7 +44,9 @@ const updateDom = () => {
   const newGrid = nextGrid(globals.grid);
   globals.grid = newGrid;
   document.querySelector(".grid-wrapper").remove();
-  document.querySelector(".iter-counter").textContent = globals.iterations;
+  const iter = document.querySelector("iter-counter");
+  document.querySelector(".iter-counter").innerHTML = `${globals.iterations}
+  <p class="iter-title">Generations</p>`;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
   globals.iterations += 1;
@@ -56,7 +65,7 @@ const handleClearClick = e => {
   globals.grid = newGrid;
   document.querySelector(".grid-wrapper").remove();
   globals.iterations = 0;
-  document.querySelector(".iter-counter").textContent = globals.iterations;
+  document.querySelector(".iter-counter").innerHTML = `${globals.iterations}`+ '<p class="iter-title">Generations</p>'
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
 };
@@ -144,7 +153,7 @@ const handleSpeedRange = e => {
 
 /**
 Renders a grid from the make makeGrid function with cells given class live or dead
-sets the propert '--size' on html so that it can be used as a CSS variable. creates
+sets the propert '--res' on html so that it can be used as a CSS variable. creates
 data attributes row and col on each cell and uses them to get the value of the cell
 and add the class live if needed.
 @function renderGrid
@@ -153,8 +162,8 @@ and add the class live if needed.
 */
 
 const renderGrid = grid => {
-  const size = grid.length;
-  document.querySelector("html").style.setProperty("--size", size);
+  const res = grid.length;
+  document.querySelector("html").style.setProperty("--res", res);
   const parent = document.createElement("div");
   parent.className = "grid-wrapper";
   grid.forEach((row, i) => {
@@ -194,6 +203,7 @@ const renderSizeSlider = max => {
   slider.onchange = handleResRange;
   sliderWrapper.appendChild(slider);
   sliderWrapper.appendChild(label);
+  sliderWrapper.className = "size-slider";
   return sliderWrapper;
 };
 /**
@@ -217,6 +227,7 @@ const renderSpeedSlider = max => {
   slider.onchange = handleSpeedRange;
   speedSliderWrapper.appendChild(slider);
   speedSliderWrapper.appendChild(label);
+  speedSliderWrapper.className = "speed-slider";
   return speedSliderWrapper;
 };
 
@@ -273,18 +284,39 @@ const renderClearButton = () => {
 };
 
 const renderIterCounter = () => {
+  const iterTitle = document.createElement("p");
   const iterCounter = document.createElement("div");
+  iterTitle.className = "iter-title";
+  iterTitle.textContent = "Generations";
   iterCounter.className = "iter-counter";
   iterCounter.textContent = globals.iterations;
+  iterCounter.appendChild(iterTitle);
   return iterCounter;
 };
 
+const renderHeader = () => {
+  const header = document.createElement("header");
+  header.className = "header";
+  header.textContent = "Conway's Game Of Life";
+  return header;
+};
+
 // appends Dom nodes to body.
-document.body.appendChild(renderSpeedSlider(50));
-document.body.appendChild(renderSizeSlider(30));
-document.body.appendChild(renderStartButton());
-document.body.appendChild(renderClearButton());
-document.body.appendChild(renderStopButton());
-document.body.appendChild(renderNextButton());
-document.body.appendChild(renderGrid(initGrid(globals.size)));
+const buttonWrapper = document.createElement("div");
+buttonWrapper.className = "button-wrapper";
+const sliderWrapper = document.createElement("div");
+sliderWrapper.className = "slider-wrapper";
+// sliders
+sliderWrapper.appendChild(renderSpeedSlider(50));
+sliderWrapper.appendChild(renderSizeSlider(30));
+// buttons
+buttonWrapper.appendChild(renderStartButton());
+buttonWrapper.appendChild(renderStopButton());
+buttonWrapper.appendChild(renderNextButton());
+buttonWrapper.appendChild(renderClearButton());
+// main grid
+document.body.appendChild(renderHeader());
 document.body.appendChild(renderIterCounter());
+document.body.appendChild(renderGrid(initGrid(globals.size)));
+document.body.appendChild(buttonWrapper);
+document.body.appendChild(sliderWrapper);
