@@ -19,7 +19,7 @@ const globals = {
   intId: null,
   speed: 200,
   iterations: 0,
-  wrapMode: true
+  wrapMode: false,
 };
 
 /**
@@ -91,6 +91,7 @@ Click handler that clears the interval from the handleStartClick
 */
 
 const handleStopClick = e => {
+  e.preventDefault();
   window.clearInterval(globals.intId);
 };
 
@@ -182,15 +183,23 @@ const renderGrid = (grid, wrapMode) => {
       cell.className = "grid-cell";
       cell.dataset.row = i;
       cell.dataset.col = j;
-      const edge = isEdge(i, j, grid);
-      if (getGridValue(i, j, grid) && !edge) {
-        cell.classList.add("live");
+
+      if (globals.wrapMode) {
+        const edge = isEdge(i, j, grid);
+        if (getGridValue(i, j, grid) && !edge) {
+          cell.classList.add("live");
+        }
+        if (edge) {
+          cell.style.backgroundColor = "whitesmoke";
+          cell.style.border = "none";
+        }
+
+      } else {
+        if (getGridValue(i, j, grid)) {
+          cell.classList.add("live");
+        }
       }
-      if(edge) {
-        cell.style.backgroundColor = "whitesmoke";
-        cell.style.border = "none";
-      }
-      parent.appendChild(cell);
+        parent.appendChild(cell);
     });
   });
   parent.onclick = handleCellClick;
@@ -316,6 +325,53 @@ const renderHeader = () => {
   return header;
 };
 
+const renderRadioButtons = () => {
+  const radioContainer = document.createElement("div");
+  radioContainer.className = "radio-container";
+  const radioHeader = document.createElement("p");
+  radioHeader.textContent = "Wrap mode";
+
+  const defaultWrap = document.createElement("div");
+  const defaultRadio = document.createElement("input");
+  const defaultLabel = document.createElement("label");
+  defaultRadio.setAttribute("type", "radio");
+  defaultRadio.setAttribute("id", "default");
+  defaultRadio.setAttribute("name", "wrapMode");
+  defaultRadio.setAttribute("value", "default");
+  defaultRadio.setAttribute("checked", "");
+  defaultLabel.setAttribute("for", "default");
+  defaultLabel.innerHTML = "Default";
+  defaultWrap.appendChild(defaultRadio);
+  defaultWrap.appendChild(defaultLabel);
+
+  const infWrap = document.createElement("div");
+  const infRadio = document.createElement("input");
+  const infLabel = document.createElement("label");
+  infRadio.setAttribute("type", "radio");
+  infRadio.setAttribute("id", "infinite");
+  infRadio.setAttribute("name", "wrapMode");
+  infRadio.setAttribute("value", "infinite");
+  infLabel.setAttribute("for", "infinite");
+  infLabel.innerHTML = "Infinite";
+  infWrap.appendChild(infRadio);
+  infWrap.appendChild(infLabel);
+
+  radioContainer.appendChild(radioHeader);
+  radioContainer.appendChild(defaultWrap);
+  radioContainer.appendChild(infWrap);
+
+  radioContainer.onclick = handleRadio;
+  return radioContainer;
+}
+
+const handleRadio = (e) => {
+  console.log(e.target.value);
+  globals.wrapMode = (e.target.value === "infinite");
+  updateDom();
+  const iter = document.querySelector(".iter-counter");
+  iter.innerHTML = `0<p class="iter-title">Generations</p>`;
+}
+
 // appends Dom nodes to body.
 const buttonWrapper = document.createElement("div");
 buttonWrapper.className = "button-wrapper";
@@ -331,6 +387,7 @@ buttonWrapper.appendChild(renderNextButton());
 buttonWrapper.appendChild(renderClearButton());
 // main grid
 document.body.appendChild(renderHeader());
+document.body.appendChild(renderRadioButtons());
 document.body.appendChild(renderIterCounter());
 document.body.appendChild(renderGrid(initGrid(globals.size, true)));
 document.body.appendChild(buttonWrapper);

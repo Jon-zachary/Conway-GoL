@@ -82,6 +82,13 @@ button {
   margin-left: -6px;
 }
 
+.radio-container {
+  grid-column-start: 1;
+  margin-left: 310px;
+  margin-top: -200px;
+  height: fit-content;
+}
+
 .grid-cell {
   border: solid black 1px;
 }
