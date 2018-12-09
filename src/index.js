@@ -1,4 +1,4 @@
-import "./styles.css";
+// import "./styles.css";
 
 /**
 Create an array of arrays each of equal length that mirrors a matrix.
@@ -7,7 +7,11 @@ Create an array of arrays each of equal length that mirrors a matrix.
 @returns {Array} - Each element of the array will be an array of size size.
 */
 
-const makeGrid = n => {
+const makeGrid = (n, inf) => {
+  if (inf) {
+    const arr = Array.from({ length: n + 2}, () => Array.from({ length: n + 2}));
+    return arr;
+  }
   const arr = Array.from({ length: n }, () => Array.from({ length: n }));
   return arr;
 };
@@ -20,7 +24,13 @@ Create a grid of all false values for the initial setup
 element of that array will be false.
 */
 
-const initGrid = n => {
+const initGrid = (n, inf) => {
+  if (inf) {
+    const arr = Array.from({ length: n + 2}, () =>
+      Array.from({ length: n + 2}, () => false)
+    );
+    return arr;
+  }
   const arr = Array.from({ length: n }, () =>
     Array.from({ length: n }, () => false)
   );
@@ -151,6 +161,20 @@ const isEqual = (grid1, grid2) => {
   return res;
 };
 
+/**
+Checks to see if a cell is on an edge. Returns true if it is, false otherwise.
+@function isEdge
+@param row {Integer} - cell row.
+@param col {Integer} - cell col.
+@param grid {Array} - grid of cell.
+@return {Boolean} - true if cell is on an edge false otherwise.
+*/
+
+const isEdge = (row, col, grid) => {
+  const size = grid.length - 1;
+  return (row > size - 2 || col > size - 2 || row < 0 + 2 || col < 0 + 2);
+}
+
 export {
   isEqual,
   flatten,
@@ -161,4 +185,5 @@ export {
   setGridValue,
   getGridValue,
   checkNeighbors,
+  isEdge,
 };

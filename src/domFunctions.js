@@ -8,16 +8,18 @@ import {
   checkNeighbors,
   flatten,
   isEqual,
+  isEdge
 } from "./index.js";
 import "./styles.css";
 
 // Global objects to be refrenced throughout script.
 const globals = {
   size: 10,
-  grid: initGrid(10),
+  grid: initGrid(10, true),
   intId: null,
   speed: 200,
-  iterations: 0
+  iterations: 0,
+  wrapMode: true
 };
 
 /**
@@ -44,9 +46,8 @@ const updateDom = () => {
   const newGrid = nextGrid(globals.grid);
   globals.grid = newGrid;
   document.querySelector(".grid-wrapper").remove();
-  const iter = document.querySelector("iter-counter");
-  document.querySelector(".iter-counter").innerHTML = `${globals.iterations}
-  <p class="iter-title">Generations</p>`;
+  const iter = document.querySelector(".iter-counter");
+  iter.innerHTML = `${globals.iterations}<p class="iter-title">Generations</p>`;
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
   globals.iterations += 1;
@@ -65,7 +66,8 @@ const handleClearClick = e => {
   globals.grid = newGrid;
   document.querySelector(".grid-wrapper").remove();
   globals.iterations = 0;
-  document.querySelector(".iter-counter").innerHTML = `${globals.iterations}`+ '<p class="iter-title">Generations</p>'
+  document.querySelector(".iter-counter").innerHTML =
+    `${globals.iterations}` + '<p class="iter-title">Generations</p>';
   const newDomGrid = renderGrid(newGrid);
   document.body.appendChild(newDomGrid);
 };
@@ -102,9 +104,17 @@ and in the dom by toggling a live class.
 const handleCellClick = e => {
   e.preventDefault();
   const { row, col } = e.target.dataset;
-  const val = getGridValue(row, col, globals.grid);
-  setGridValue(row, col, !val, globals.grid);
-  e.target.classList.toggle("live");
+  if (globals.wrapMode) {
+    if (!isEdge(row, col, globals.grid)) {
+      const val = getGridValue(row, col, globals.grid);
+      setGridValue(row, col, !val, globals.grid);
+      e.target.classList.toggle("live");
+    }
+  } else {
+    const val = getGridValue(row, col, globals.grid);
+    setGridValue(row, col, !val, globals.grid);
+    e.target.classList.toggle("live");
+  }
 };
 
 /**
@@ -161,7 +171,7 @@ and add the class live if needed.
 @return {HTMLnodeList} - div containg the children divs from the grid.
 */
 
-const renderGrid = grid => {
+const renderGrid = (grid, wrapMode) => {
   const res = grid.length;
   document.querySelector("html").style.setProperty("--res", res);
   const parent = document.createElement("div");
@@ -172,8 +182,13 @@ const renderGrid = grid => {
       cell.className = "grid-cell";
       cell.dataset.row = i;
       cell.dataset.col = j;
-      if (getGridValue(cell.dataset.row, cell.dataset.col, grid)) {
+      const edge = isEdge(i, j, grid);
+      if (getGridValue(i, j, grid) && !edge) {
         cell.classList.add("live");
+      }
+      if(edge) {
+        cell.style.backgroundColor = "whitesmoke";
+        cell.style.border = "none";
       }
       parent.appendChild(cell);
     });
@@ -317,6 +332,6 @@ buttonWrapper.appendChild(renderClearButton());
 // main grid
 document.body.appendChild(renderHeader());
 document.body.appendChild(renderIterCounter());
-document.body.appendChild(renderGrid(initGrid(globals.size)));
+document.body.appendChild(renderGrid(initGrid(globals.size, true)));
 document.body.appendChild(buttonWrapper);
 document.body.appendChild(sliderWrapper);

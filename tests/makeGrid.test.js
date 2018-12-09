@@ -6,7 +6,8 @@ import {
   isLive,
   nextGrid,
   flatten,
-  isEqual
+  isEqual,
+  isEdge,
 } from "../src/index.js";
 
 describe("makeGrid", () => {
@@ -144,5 +145,24 @@ describe("isEqual", () => {
     const grid1 = makeGrid(5).map(el => el.map(el => false));
     const grid2 = makeGrid(5).map(el => el.map(el => true));
     expect(isEqual(grid1, grid2)).toBe(false);
+  });
+});
+
+describe("isEdge", () => {
+  test("should return true if cell is on an edge", () => {
+    const grid = makeGrid(5).map(el => el.map(el => false));
+    let edge = isEdge(0, 3, grid);
+    expect(edge).toBe(true);
+    edge = isEdge(4, 3, grid);
+    expect(edge).toBe(true);
+    edge = isEdge(2, 0, grid);
+    expect(edge).toBe(true);
+    edge = isEdge(2, 4, grid);
+    expect(edge).toBe(true);
+  });
+  test("should return false if cell is not on edge", () => {
+      const grid = makeGrid(5).map(el => el.map(el => false));
+      let edge = isEdge(2, 2, grid);
+      expect(edge).toBe(false);
   });
 });
