@@ -1,0 +1,8 @@
+{
+  "name": "Conway-GoL",
+  "version": 2,
+  "alias": "Conway-GoL",
+  "builds": [
+    { "src": "package.json", "use": "@now/static-build" }
+  ]
+}
