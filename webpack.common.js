@@ -1,21 +1,9 @@
 const path = require("path");
-const webpack = require("webpack");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  mode: "development",
   entry: "./src/domFunctions.js",
-  devtool: "inline-source-map",
-  devServer: {
-    contentBase: "./dist",
-    hot: true
-  },
-  output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "dist")
-  },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebPackPlugin({
       template: "./src/index.html",
       filename: "./index.html"
@@ -52,5 +40,9 @@ module.exports = {
         }
       }
     ]
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist")
   }
 };
